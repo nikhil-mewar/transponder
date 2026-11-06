@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- vLLM provider (`type: vllm`) defaulting to `http://localhost:8000/v1` and forwarding `api_key` as a bearer token. Targets using `vllm` count as free in usage costs.
+
 ## [0.2.0] - 2026-11-06
 
 ### Added
