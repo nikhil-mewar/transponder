@@ -118,7 +118,7 @@ func (c *Bootstrap) validate() error {
 			return fmt.Errorf("config: provider %q is declared twice", p.Name)
 		}
 		switch p.Type {
-		case "echo", "openai", "ollama", "cloudflare":
+		case "echo", "openai", "ollama", "cloudflare", "litellm":
 		default:
 			return fmt.Errorf("config: provider %q has unknown type %q", p.Name, p.Type)
 		}

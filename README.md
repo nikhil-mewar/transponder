@@ -93,6 +93,8 @@ providers:
     api_key: ${OPENAI_API_KEY}
   - name: local
     type: ollama          # http://localhost:11434/v1 unless base_url is set
+  - name: proxy
+    type: litellm         # http://localhost:4000/v1 unless base_url is set
   - name: cf
     type: cloudflare      # set base_url to your AI Gateway compatibility endpoint
     base_url: https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/compat

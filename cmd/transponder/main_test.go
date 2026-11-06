@@ -159,6 +159,14 @@ func TestBuildRouter(t *testing.T) {
 			},
 			model: "m", provider: "cf", typ: "cloudflare", upstream: "m",
 		},
+		{
+			name: "litellm route",
+			cfg: config.Bootstrap{
+				Providers: []config.Provider{{Name: "llm", Type: "litellm", APIKey: "sk-litellm"}},
+				Routes:    []config.Route{{Match: "*", Targets: []config.Target{{Provider: "llm"}}}},
+			},
+			model: "m", provider: "llm", typ: "litellm", upstream: "m",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -189,6 +197,22 @@ func TestBuildRouterOllamaDefault(t *testing.T) {
 	got, _ := r.Resolve("x")
 	a, ok := got.Provider.(interface{ BaseURL() string })
 	if !ok || a.BaseURL() != "http://localhost:11434/v1" {
+		t.Fatalf("provider %T", got.Provider)
+	}
+}
+
+func TestBuildRouterLiteLLMDefault(t *testing.T) {
+	cfg := &config.Bootstrap{
+		Providers: []config.Provider{{Name: "local", Type: "litellm"}},
+		Routes:    []config.Route{{Match: "*", Targets: []config.Target{{Provider: "local"}}}},
+	}
+	r, err := buildRouter(cfg, http.DefaultClient)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, _ := r.Resolve("x")
+	a, ok := got.Provider.(interface{ BaseURL() string })
+	if !ok || a.BaseURL() != "http://localhost:4000/v1" {
 		t.Fatalf("provider %T", got.Provider)
 	}
 }

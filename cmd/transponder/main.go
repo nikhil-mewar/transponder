@@ -23,6 +23,7 @@ import (
 	"github.com/raven-clown/transponder/internal/provider"
 	"github.com/raven-clown/transponder/internal/provider/cloudflare"
 	"github.com/raven-clown/transponder/internal/provider/echo"
+	"github.com/raven-clown/transponder/internal/provider/litellm"
 	"github.com/raven-clown/transponder/internal/provider/ollama"
 	"github.com/raven-clown/transponder/internal/provider/openai"
 	"github.com/raven-clown/transponder/internal/router"
@@ -160,6 +161,8 @@ func buildRouter(cfg *config.Bootstrap, client *http.Client) (*router.Router, er
 			prov = openai.New(openai.Options{Name: p.Name, BaseURL: p.BaseURL, APIKey: p.APIKey, Client: client})
 		case "ollama":
 			prov = ollama.New(p.Name, p.BaseURL, p.APIKey, client)
+		case "litellm":
+			prov = litellm.New(p.Name, p.BaseURL, p.APIKey, client)
 		case "cloudflare":
 			prov = cloudflare.New(p.Name, p.BaseURL, p.APIKey, client)
 		default:
