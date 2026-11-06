@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"strings"
 	"sync"
 	"syscall"
@@ -35,6 +36,31 @@ var version = "dev"
 
 // shutdownTimeout is how long open requests get to finish after a stop signal.
 var shutdownTimeout = 10 * time.Second
+
+// versionString describes the build: the version, and the commit and time when
+// the toolchain recorded them.
+func versionString(version string, info *debug.BuildInfo, ok bool) string {
+	out := "transponder " + version
+	if !ok || info == nil {
+		return out
+	}
+	settings := make(map[string]string, len(info.Settings))
+	for _, s := range info.Settings {
+		settings[s.Key] = s.Value
+	}
+	rev, when := settings["vcs.revision"], settings["vcs.time"]
+	if rev == "" || when == "" {
+		return out
+	}
+	if len(rev) > 7 {
+		rev = rev[:7]
+	}
+	detail := rev + ", " + when
+	if settings["vcs.modified"] == "true" {
+		detail += ", modified"
+	}
+	return out + " (" + detail + ")"
+}
 
 func main() {
 	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr))

@@ -46,6 +46,38 @@ func TestDecodeChatRequestErrors(t *testing.T) {
 	}
 }
 
+func TestDecodeChatRequestWrongTypes(t *testing.T) {
+	tests := []struct {
+		name, body, param, message string
+	}{
+		{"model", `{"model":5,"messages":[{"role":"user","content":"x"}]}`, "model", "model must be a string"},
+		{"messages", `{"model":"m","messages":"hi"}`, "messages", "messages must be a list"},
+		{"message item", `{"model":"m","messages":[1]}`, "messages", "messages must be a list of objects"},
+		{"role", `{"model":"m","messages":[{"role":1,"content":"x"}]}`, "messages.role", "messages.role must be a string"},
+		{"role of a later message", `{"model":"m","messages":[{"role":"user","content":"x"},{"role":1}]}`, "messages.role", "messages.role must be a string"},
+		{"max_tokens string", `{"model":"m","messages":[{"role":"user","content":"x"}],"max_tokens":"10"}`, "max_tokens", "max_tokens must be an integer"},
+		{"max_tokens fraction", `{"model":"m","messages":[{"role":"user","content":"x"}],"max_tokens":1.5}`, "max_tokens", "max_tokens must be an integer"},
+		{"temperature", `{"model":"m","messages":[{"role":"user","content":"x"}],"temperature":"hot"}`, "temperature", "temperature must be a number"},
+		{"stream", `{"model":"m","messages":[{"role":"user","content":"x"}],"stream":"yes"}`, "stream", "stream must be true or false"},
+		{"body is a list", `[]`, "", "the request body must be a JSON object"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := DecodeChatRequest(strings.NewReader(tt.body))
+			var re *RequestError
+			if !errors.As(err, &re) {
+				t.Fatalf("err = %v, want *RequestError", err)
+			}
+			if re.Param != tt.param || re.Code != "invalid_json" || re.Message != tt.message {
+				t.Fatalf("param %q code %q message %q, want %q invalid_json %q", re.Param, re.Code, re.Message, tt.param, tt.message)
+			}
+			if strings.Contains(re.Message, "Go") || strings.Contains(re.Message, "wire") {
+				t.Fatalf("message shows internals: %q", re.Message)
+			}
+		})
+	}
+}
+
 func TestEncodeChatResponse(t *testing.T) {
 	b, err := EncodeChatResponse(&schema.ChatResponse{
 		ID:           "id-1",
