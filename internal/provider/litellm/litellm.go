@@ -18,4 +18,3 @@ func New(name, baseURL, apiKey string, client *http.Client) *openai.Adapter {
 	}
 	return openai.New(openai.Options{Name: name, BaseURL: baseURL, APIKey: apiKey, Client: client})
 }
-
