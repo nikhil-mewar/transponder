@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- llama.cpp server provider (`type: llamacpp`) defaulting to `http://localhost:8080/v1` and forwarding `api_key` as a bearer token. Targets using `llamacpp` count as free in usage costs. Note that `llama-server` listens on `:8080` by default, so pass `--port` or configure `listen_addr` if running both on the same machine.
+
 ## [0.2.2] - 2026-11-08
 
 ### Added
