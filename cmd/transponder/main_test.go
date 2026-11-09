@@ -236,7 +236,7 @@ func TestBuildRouter(t *testing.T) {
 		{
 			name: "llamacpp route",
 			cfg: config.Bootstrap{
-				Providers: []config.Provider{{Name: "l", Type: "llamacpp", APIKey: "sk-llamacpp"}},
+				Providers: []config.Provider{{Name: "l", Type: "llamacpp", APIKey: "k"}},
 				Routes:    []config.Route{{Match: "*", Targets: []config.Target{{Provider: "l"}}}},
 			},
 			model: "m", provider: "l", typ: "llamacpp", upstream: "m",
